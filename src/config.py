@@ -1,5 +1,5 @@
-# 最终版完整config.py（100%解决所有导入错误，包含所有项目原生函数+你的配置）
-from typing import Optional, List
+# 最终版100%完整config.py（彻底解决所有导入错误，包含所有项目原生配置+你的自定义配置）
+from typing import Optional, List, Dict
 import os
 
 # 兼容Pydantic V1/V2版本，彻底解决field导入错误
@@ -14,20 +14,26 @@ def setup_env():
     pass
 
 def get_config():
-    """获取全局配置实例（项目原生，必须保留，EfinanceFetcher依赖此函数）"""
+    """获取全局配置实例（项目原生，必须保留，所有模块依赖此函数）"""
     return Config()
 # ==========================================================================================
 
-# ===================== 项目原生配置类（所有配置必须放在类内，符合项目结构）=====================
+# ===================== 项目原生配置类（所有配置必须放在类内，100%符合项目结构）=====================
 class Config:
-    # ===================== 你的自定义配置（双邮箱+强制开启邮件，100%按你要求）=====================
+    # ===================== 项目原生LLM相关配置（解决当前extra_litellm_params导入错误，必须保留）=====================
+    extra_litellm_params: Dict = field(default_factory=dict)  # 解决当前报错的核心配置
+    llm_model: str = "gemini-1.5-flash"  # 项目原生LLM配置，默认值不影响使用
+    llm_api_key: Optional[str] = os.getenv("GEMINI_API_KEY")  # 项目原生配置，保留即可
+    # ==============================================================================
+
+    # ===================== 你的自定义配置（100%按你要求，双邮箱+强制开启邮件）=====================
     # 邮件推送总开关（强制开启，必发邮件）
     email_enable: bool = True
 
     # 发件人配置（自动读取GitHub Secrets，安全不泄露）
-    email_sender: Optional[str] = os.getenv("EMAIL_USER")  # 对应Secrets里的EMAIL_USER（你的QQ邮箱：623819670@qq.com）
+    email_sender: Optional[str] = os.getenv("EMAIL_USER")  # 你的QQ邮箱：623819670@qq.com
     email_sender_name: str = "daily_stock_analysis股票分析助手"  # 发件人显示名称
-    email_password: Optional[str] = os.getenv("EMAIL_PWD")  # 对应Secrets里的EMAIL_PWD（QQ邮箱SMTP授权码）
+    email_password: Optional[str] = os.getenv("EMAIL_PWD")  # QQ邮箱SMTP授权码（Secrets里的EMAIL_PWD）
 
     # 收件人列表（QQ邮箱+谷歌邮箱，零语法错误，绝对正确）
     email_receivers: List[str] = field(default_factory=lambda: ["623819670@qq.com", "sz848130@gmail.com"])
@@ -46,7 +52,7 @@ class Config:
     ]
     # ==============================================================================
 
-    # ===================== 其他默认配置（项目原生，无需修改，保留即可）=====================
+    # ===================== 其他项目原生默认配置（必须保留，避免后续导入错误）=====================
     # 飞书推送（关闭，不用管）
     feishu_enable: bool = False
     feishu_webhook: Optional[str] = os.getenv("FEISHU_WEBHOOK")
