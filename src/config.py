@@ -1,7 +1,7 @@
 import os
 from typing import Optional, List, Dict
 
-# ===================== 顶层函数/变量 =====================
+# ===================== 顶层函数/变量（必须存在，供其他模块导入） =====================
 def setup_env():
     """加载环境变量到os.environ，用于GitHub Actions运行"""
     pass
@@ -19,16 +19,16 @@ def get_api_keys_for_model(model_name: str) -> Optional[str]:
     """根据模型名称返回对应的 API 密钥"""
     if model_name.startswith("gemini"):
         return os.getenv("GEMINI_API_KEY")
-    # 其他模型添加在此
+    # 如果需要其他模型，可在此添加
     return None
 
 def get_configured_lm_models() -> List[Dict[str, str]]:
-    """返回配置的 LLM 模型列表"""
+    """返回配置的 LLM 模型列表（供 lm_adapter 使用）"""
     config = get_config()
     return [{"model": config.llm_model, "api_key": config.llm_api_key}]
 
 def get_llm_config() -> Dict:
-    """返回 LLM 配置字典"""
+    """返回 LLM 配置字典（兼容可能的使用）"""
     config = get_config()
     return {
         "model": config.llm_model,
@@ -42,7 +42,7 @@ def get_litellm_params() -> Dict:
 
 def get_thinking_extra_body() -> Dict:
     """返回 thinking 参数（如果项目中需要）"""
-    return {}   # 可根据需要配置，例如 {"thinking": True}
+    return {}  # 可按需配置，例如 {"thinking": True}
 
 def get_model_config(model_name: str = None) -> Dict:
     """获取指定模型的配置（兼容可能的使用）"""
@@ -53,22 +53,22 @@ def get_model_config(model_name: str = None) -> Dict:
 # 顶层变量（必须存在）
 extra_litellm_params: Dict = {}
 
-# ===================== Config 类 =====================
+# ===================== Config 类（所有自定义配置） =====================
 class Config:
-    # 邮件配置
+    # 邮件配置（强制开启）
     email_enable: bool = True
     email_sender: Optional[str] = os.getenv("EMAIL_USER")
     email_sender_name: str = "daily_stock_analysis股票分析助手"
     email_password: Optional[str] = os.getenv("EMAIL_PWD")
-    email_receivers: List[str] = ["623819670@qq.com", "sz848130@gmail.com"]
+    email_receivers: List[str] = ["623819670@qq.com", "sz848130@gmail.com"]  # 直接使用列表，避免 pydantic field
 
-    # 股票列表
+    # 股票/ETF 列表
     stock_list = [
         "002413", "002639", "603601", "600010", "002340",
         "002165", "002506", "515180", "159611",
     ]
 
-    # LLM 配置
+    # LLM 相关配置
     llm_model: str = "gemini-1.5-flash"
     llm_api_key: Optional[str] = os.getenv("GEMINI_API_KEY")
 
