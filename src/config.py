@@ -1,7 +1,12 @@
 # 完整的股票分析配置文件（直接全选粘贴，零错误）
 from typing import Optional, List
-from pydantic import field_validator, field
-import os
+import os  # 归类到顶部，逻辑更清晰
+
+# 兼容Pydantic V1/V2版本，解决field导入错误
+try:
+    from pydantic import field_validator, Field as field
+except ImportError:
+    from pydantic import field_validator, field
 
 # ===================== 邮件核心配置（已包含你的QQ+谷歌邮箱）=====================
 # 邮件推送总开关（强制开启，必发邮件）
