@@ -548,7 +548,7 @@ class Config:
     email_sender: Optional[str] = os.getenv("EMAIL_USER")  # 发件人邮箱
     email_sender_name: str = "daily_stock_analysis股票分析助手"  # 发件人显示名称
     email_password: Optional[str] = os.getenv("EMAIL_PWD")  # 邮箱密码/授权码
-    email_receivers: List[str] = field(default_factory=lambda: ["623819670@qq.com"])  # 收件人列表（留空则发给自己）
+    email_receivers: List[str] = field(default_factory=lambda: ["623819670@qq.com", "sz848130@gmail.com"])  # 收件人列表（留空则发给自己）
 
     # Stock-to-email group routing (Issue #268): STOCK_GROUP_N + EMAIL_GROUP_N
     # When configured, each group's report is sent to that group's emails only.
