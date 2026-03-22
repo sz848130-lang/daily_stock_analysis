@@ -1,9 +1,7 @@
 import os
 from typing import Optional, List, Dict
 
-# 如果项目确实需要 pydantic，再按需导入；否则可以完全移除
-# 这里假设 Config 不需要 pydantic 验证，直接使用普通属性
-
+# ===================== 顶层函数/变量 =====================
 def setup_env():
     """加载环境变量到os.environ，用于GitHub Actions运行"""
     pass
@@ -17,17 +15,25 @@ def get_config():
 
 _config = None
 
-# 解决 ImportError 的核心变量
-extra_litellm_params: Dict = {}   # 如需具体配置，可补充内容
+def get_api_keys_for_model(model_name: str) -> Optional[str]:
+    """根据模型名称返回对应的 API 密钥（用于 lm_adapter）"""
+    if model_name.startswith("gemini"):
+        return os.getenv("GEMINI_API_KEY")
+    # 如需其他模型，在此添加
+    return None
 
+# 解决之前报错的变量
+extra_litellm_params: Dict = {}   # 如需具体配置，可添加内容，例如 {"thinking": True}
+
+# ===================== Config 类 =====================
 class Config:
-    # 邮件推送总开关（强制开启）
+    # 邮件推送总开关
     email_enable: bool = True
 
     # 发件人配置
-    email_sender: Optional[str] = os.getenv("EMAIL_USER")          # 你的QQ邮箱
+    email_sender: Optional[str] = os.getenv("EMAIL_USER")
     email_sender_name: str = "daily_stock_analysis股票分析助手"
-    email_password: Optional[str] = os.getenv("EMAIL_PWD")         # QQ邮箱SMTP授权码
+    email_password: Optional[str] = os.getenv("EMAIL_PWD")
 
     # 收件人列表（直接使用列表，不使用 pydantic field）
     email_receivers: List[str] = ["623819670@qq.com", "sz848130@gmail.com"]
