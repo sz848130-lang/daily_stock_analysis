@@ -1,7 +1,7 @@
 import os
 from typing import Optional, List, Dict
 
-# ===================== 顶层函数/变量（修正函数名，匹配项目导入要求）=====================
+# ===================== 顶层函数/变量 =====================
 def setup_env():
     """加载环境变量到os.environ，用于GitHub Actions运行"""
     pass
@@ -22,15 +22,13 @@ def get_api_keys_for_model(model_name: str) -> Optional[str]:
     # 其他模型添加在此
     return None
 
-# 关键修正：函数名从 get_configured_lm_models → get_configured_llm_models（补全l）
-def get_configured_llm_models() -> List[Dict[str, str]]:
-    """返回配置的 LLM 模型列表（匹配项目导入的函数名）"""
+def get_configured_lm_models() -> List[Dict[str, str]]:
+    """返回配置的 LLM 模型列表"""
     config = get_config()
-    # 如果项目只使用一个模型，返回单元素列表
     return [{"model": config.llm_model, "api_key": config.llm_api_key}]
 
 def get_llm_config() -> Dict:
-    """返回 LLM 配置字典（兼容可能的使用）"""
+    """返回 LLM 配置字典"""
     config = get_config()
     return {
         "model": config.llm_model,
@@ -42,9 +40,20 @@ def get_litellm_params() -> Dict:
     """返回 LiteLLM 额外参数"""
     return extra_litellm_params
 
-extra_litellm_params: Dict = {}   # 可根据需要填充，如 {"thinking": True}
+def get_thinking_extra_body() -> Dict:
+    """返回 thinking 参数（如果项目中需要）"""
+    return {}   # 可根据需要配置，例如 {"thinking": True}
 
-# ===================== Config 类（完全保留你的配置）=====================
+def get_model_config(model_name: str = None) -> Dict:
+    """获取指定模型的配置（兼容可能的使用）"""
+    config = get_config()
+    model = model_name or config.llm_model
+    return {"model": model, "api_key": get_api_keys_for_model(model)}
+
+# 顶层变量（必须存在）
+extra_litellm_params: Dict = {}
+
+# ===================== Config 类 =====================
 class Config:
     # 邮件配置
     email_enable: bool = True
@@ -53,7 +62,7 @@ class Config:
     email_password: Optional[str] = os.getenv("EMAIL_PWD")
     email_receivers: List[str] = ["623819670@qq.com", "sz848130@gmail.com"]
 
-    # 股票列表（仅保留你指定的标的）
+    # 股票列表
     stock_list = [
         "002413", "002639", "603601", "600010", "002340",
         "002165", "002506", "515180", "159611",
